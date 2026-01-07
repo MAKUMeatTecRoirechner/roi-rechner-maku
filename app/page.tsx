@@ -1,9 +1,5 @@
-import { RoiCalculator } from "@/components/RoiCalculator";
+import { LandingPage } from "@/components/LandingPage";
 
 export default function Home() {
-  return (
-    <div className="min-h-screen bg-background">
-      <RoiCalculator />
-    </div>
-  );
+  return <LandingPage />;
 }
