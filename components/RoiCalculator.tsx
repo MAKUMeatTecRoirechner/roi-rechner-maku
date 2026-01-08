@@ -1216,8 +1216,8 @@ export function RoiCalculator({ embed = false }: { embed?: boolean }) {
             </DialogDescription>
           </DialogHeader>
           
-          {/* Scrollbarer Container für Formularfelder */}
-          <div className="space-y-6 py-6 overflow-y-auto max-h-[60vh] overscroll-contain flex-1 pr-2">
+          {/* Scrollbarer Container für Formularfelder - feste Höhe für iframe-Kompatibilität */}
+          <div className="space-y-6 py-6 overflow-y-auto max-h-[450px] overscroll-contain flex-1 pr-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-gray-400">
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}

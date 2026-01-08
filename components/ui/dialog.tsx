@@ -38,7 +38,9 @@ function DialogOverlay({
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
       className={cn(
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80 backdrop-blur-sm overflow-y-auto",
+        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80 backdrop-blur-sm",
+        // Flexbox centering for better iframe compatibility
+        "flex items-center justify-center p-4",
         className
       )}
       {...props}
@@ -69,11 +71,10 @@ function DialogContent({
           onPointerDownOutside?.(e);
         }}
         className={cn(
-          // Scrollable dialog content - uses fixed positioning with flexbox centering for better scroll behavior
-          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed z-50 grid w-full max-w-[calc(100%-2rem)] gap-4 rounded-lg border p-6 shadow-lg duration-200 outline-none sm:max-w-lg",
-          // Centering and scroll behavior
-          "top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]",
-          "max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain",
+          // Dialog content with relative positioning inside flex overlay for iframe compatibility
+          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 relative z-50 grid w-full max-w-[calc(100%-2rem)] gap-4 rounded-lg border p-6 shadow-lg duration-200 outline-none sm:max-w-lg",
+          // Fixed max-height for iframe compatibility (dvh doesn't work reliably in iframes)
+          "max-h-[700px] overflow-hidden",
           className
         )}
         {...props}

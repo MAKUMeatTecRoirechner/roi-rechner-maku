@@ -174,3 +174,29 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* iframe Embed Compatibility - Touch Scrolling */
+[data-slot="dialog-content"] {
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+
+/* Scrollable containers within dialogs */
+[data-slot="dialog-content"] > div[class*="overflow-y-auto"] {
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+}
+
+/* Prevent body scroll when dialog is open (iframe context) */
+body:has([data-slot="dialog-overlay"]) {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+/* Popover positioning for iframe context - prevent document height changes */
+[data-slot="popover-content"] {
+  /* Ensure popover doesn't extend beyond viewport */
+  max-height: 250px;
+}
