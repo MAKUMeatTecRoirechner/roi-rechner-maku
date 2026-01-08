@@ -40,10 +40,12 @@ export interface Translations {
   contactHeader: string
   nameLabel: string;
   emailLabel: string;
+  phoneLabel: string;
   companyLabel: string;
   countryLabel: string;
   namePlaceholder: string;
   emailPlaceholder: string;
+  phonePlaceholder: string;
   companyPlaceholder: string;
   countryPlaceholder: string;
 
@@ -128,10 +130,12 @@ export const translations: Record<Language, Translations> = {
     contactHeader: 'Kontaktdaten',
     nameLabel: 'Name',
     emailLabel: 'E-Mail',
+    phoneLabel: 'Telefon',
     companyLabel: 'Unternehmen',
     countryLabel: 'Land',
     namePlaceholder: 'Ihr Name',
     emailPlaceholder: 'ihre.email@beispiel.de',
+    phonePlaceholder: '+49 123 456789',
     companyPlaceholder: 'Ihr Unternehmen',
     countryPlaceholder: 'Ihr Land',
     fish: 'Fisch',
@@ -196,10 +200,12 @@ export const translations: Record<Language, Translations> = {
     contactHeader: 'Contact Details',
     nameLabel: 'Name',
     emailLabel: 'Email',
+    phoneLabel: 'Phone',
     companyLabel: 'Company',
     countryLabel: 'Country',
     namePlaceholder: 'Your Name',
     emailPlaceholder: 'your.email@example.com',
+    phonePlaceholder: '+1 234 567890',
     companyPlaceholder: 'Your Company',
     countryPlaceholder: 'Your Country',
     fish: 'Fish',
@@ -264,10 +270,12 @@ export const translations: Record<Language, Translations> = {
     contactHeader: 'Datos de contacto',
     nameLabel: 'Nombre',
     emailLabel: 'Correo Electrónico',
+    phoneLabel: 'Teléfono',
     companyLabel: 'Empresa',
     countryLabel: 'País',
     namePlaceholder: 'Su Nombre',
     emailPlaceholder: 'su.correo@ejemplo.com',
+    phonePlaceholder: '+34 123 456789',
     companyPlaceholder: 'Su Empresa',
     countryPlaceholder: 'Su País',
     fish: 'Pescado',

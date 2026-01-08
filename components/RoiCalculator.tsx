@@ -173,10 +173,12 @@ export function RoiCalculator({ embed = false }: { embed?: boolean }) {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
+  const [phone, setPhone] = React.useState("");
   const [company, setCompany] = React.useState("");
   const [country, setCountry] = React.useState("");
   const [nameError, setNameError] = React.useState("");
   const [emailError, setEmailError] = React.useState("");
+  const [phoneError, setPhoneError] = React.useState("");
   const [privacyConsent, setPrivacyConsent] = React.useState(false);
   const [privacyConsentError, setPrivacyConsentError] = React.useState("");
   const [dataSubmitted, setDataSubmitted] = React.useState(false);
@@ -296,6 +298,17 @@ export function RoiCalculator({ embed = false }: { embed?: boolean }) {
     return true;
   };
 
+  const validatePhone = (value: string): boolean => {
+    // Basic phone validation: at least 6 digits (allows +, spaces, dashes, parentheses)
+    const phoneRegex = /^[\d\s\-\+\(\)]{6,}$/;
+    if (!phoneRegex.test(value)) {
+      setPhoneError(language === "de" ? "Bitte geben Sie eine gültige Telefonnummer ein" : language === "en" ? "Please enter a valid phone number" : "Por favor ingrese un número de teléfono válido");
+      return false;
+    }
+    setPhoneError("");
+    return true;
+  };
+
   // Validation per step - all fields must be filled
   const isStepValid = (step: number) => {
     switch (step) {
@@ -370,11 +383,17 @@ export function RoiCalculator({ embed = false }: { embed?: boolean }) {
     if (value) validateEmail(value);
   };
 
+  const handlePhoneChange = (value: string) => {
+    setPhone(value);
+    if (value) validatePhone(value);
+  };
+
   const handleModalSubmit = async () => {
     const isNameValid = validateName(name);
     const isEmailValid = validateEmail(email);
+    const isPhoneValid = validatePhone(phone);
     
-    if (!isNameValid || !isEmailValid) {
+    if (!isNameValid || !isEmailValid || !isPhoneValid) {
       return;
     }
 
@@ -392,6 +411,7 @@ export function RoiCalculator({ embed = false }: { embed?: boolean }) {
     const data = {
       name,
       email,
+      phone,
       company,
       country,
       language,
@@ -421,10 +441,12 @@ export function RoiCalculator({ embed = false }: { embed?: boolean }) {
         setCurrentStep(5); // Gehe zu Step 5 (Ergebnisse)
         setName("");
         setEmail("");
+        setPhone("");
         setCompany("");
         setCountry("");
         setNameError("");
         setEmailError("");
+        setPhoneError("");
         setPrivacyConsent(false);
         setPrivacyConsentError("");
         
@@ -1238,6 +1260,35 @@ export function RoiCalculator({ embed = false }: { embed?: boolean }) {
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 }}
+              className="space-y-2"
+            >
+              <label className="text-sm font-bold leading-none text-foreground flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#C41230]" />
+                {t.phoneLabel}
+              </label>
+              <Input
+                type="tel"
+                value={phone}
+                onChange={(e) => handlePhoneChange(e.target.value)}
+                placeholder={t.phonePlaceholder}
+                className="h-14 text-base border-2 focus:ring-2 focus:ring-[#C41230] hover:border-[#C41230] transition-all duration-300"
+                onBlur={() => phone && validatePhone(phone)}
+              />
+              {phoneError && (
+                <motion.p 
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="text-xs text-[#C41230] font-bold"
+                >
+                  {phoneError}
+                </motion.p>
+              )}
+            </motion.div>
+            
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
               className="space-y-2"
             >
@@ -1257,7 +1308,7 @@ export function RoiCalculator({ embed = false }: { embed?: boolean }) {
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
+              transition={{ delay: 0.35 }}
               className="space-y-2"
             >
               <label className="text-sm font-bold leading-none text-foreground flex items-center gap-2">
@@ -1277,7 +1328,7 @@ export function RoiCalculator({ embed = false }: { embed?: boolean }) {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
+              transition={{ delay: 0.4 }}
               className="space-y-2"
             >
               <label className="flex items-start gap-3 text-sm text-gray-700">
@@ -1348,13 +1399,13 @@ export function RoiCalculator({ embed = false }: { embed?: boolean }) {
           <DialogFooter className="flex-col sm:flex-row gap-4">
             {/* Cancel-Button entfernt - Modal kann nicht geschlossen werden ohne Datenübermittlung */}
             <motion.div 
-              whileHover={!name || !email || !company || !country || !privacyConsent || !!nameError || !!emailError ? {} : { scale: 1.05 }} 
-              whileTap={!name || !email || !company || !country || !privacyConsent || !!nameError || !!emailError ? {} : { scale: 0.95 }}
+              whileHover={!name || !email || !phone || !company || !country || !privacyConsent || !!nameError || !!emailError || !!phoneError ? {} : { scale: 1.05 }} 
+              whileTap={!name || !email || !phone || !company || !country || !privacyConsent || !!nameError || !!emailError || !!phoneError ? {} : { scale: 0.95 }}
               className="w-full sm:w-auto"
             >
               <Button
                 onClick={handleModalSubmit}
-                disabled={!name || !email || !company || !country || !privacyConsent || !!nameError || !!emailError}
+                disabled={!name || !email || !phone || !company || !country || !privacyConsent || !!nameError || !!emailError || !!phoneError}
                 className="w-full h-14 px-10 font-bold shadow-2xl transition-all disabled:opacity-50"
                 style={{ 
                   backgroundColor: '#C41230',
