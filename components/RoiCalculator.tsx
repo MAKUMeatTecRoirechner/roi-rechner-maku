@@ -1343,10 +1343,17 @@ export function RoiCalculator({ embed = false }: { embed?: boolean }) {
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-full p-0" align="start">
+                <PopoverContent 
+                  className="w-[--radix-popover-trigger-width] p-0" 
+                  align="start"
+                  side="bottom"
+                  avoidCollisions={false}
+                >
                   <Command>
-                    <CommandInput placeholder={language === "de" ? "Land suchen..." : language === "en" ? "Search country..." : "Buscar país..."} />
-                    <CommandList>
+                    <CommandInput 
+                      placeholder={language === "de" ? "Land suchen..." : language === "en" ? "Search country..." : "Buscar país..."} 
+                    />
+                    <CommandList className="max-h-[200px]">
                       <CommandEmpty>{language === "de" ? "Kein Land gefunden." : language === "en" ? "No country found." : "País no encontrado."}</CommandEmpty>
                       <CommandGroup>
                         {COUNTRIES.map((c) => (

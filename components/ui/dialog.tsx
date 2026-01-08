@@ -38,7 +38,7 @@ function DialogOverlay({
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
       className={cn(
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80 backdrop-blur-sm",
+        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80 backdrop-blur-sm overflow-y-auto",
         className
       )}
       {...props}
@@ -50,6 +50,7 @@ function DialogContent({
   className,
   children,
   showCloseButton = true,
+  onPointerDownOutside,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
@@ -59,10 +60,20 @@ function DialogContent({
       <DialogOverlay />
       <DialogPrimitive.Content
         data-slot="dialog-content"
+        onPointerDownOutside={(e) => {
+          // Don't close dialog when clicking on popover content (which is rendered outside via portal)
+          const target = e.target as HTMLElement;
+          if (target?.closest('[data-slot="popover-content"]')) {
+            e.preventDefault();
+          }
+          onPointerDownOutside?.(e);
+        }}
         className={cn(
-          // Make dialog content scrollable with mouse wheel on smaller viewports
-          // (otherwise Radix scroll-lock can make wheel scrolling feel "broken" and only the scrollbar drag works).
-          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg duration-200 outline-none sm:max-w-lg max-h-[calc(100vh-2rem)] overflow-y-auto overscroll-contain",
+          // Scrollable dialog content - uses fixed positioning with flexbox centering for better scroll behavior
+          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed z-50 grid w-full max-w-[calc(100%-2rem)] gap-4 rounded-lg border p-6 shadow-lg duration-200 outline-none sm:max-w-lg",
+          // Centering and scroll behavior
+          "top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]",
+          "max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain",
           className
         )}
         {...props}
