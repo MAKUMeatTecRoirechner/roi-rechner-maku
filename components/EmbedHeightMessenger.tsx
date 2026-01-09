@@ -28,8 +28,8 @@ export function EmbedHeightMessenger() {
 
     const measureHeight = () => {
       // Measure only the main content, excluding portal elements
-      const mainContent = document.querySelector('[role="main"]') as HTMLElement | null;
-      if (mainContent) {
+      const mainContent = document.querySelector('[role="main"]');
+      if (mainContent && mainContent instanceof HTMLElement) {
         return Math.max(
           mainContent.scrollHeight ?? 0,
           mainContent.offsetHeight ?? 0,

@@ -1189,7 +1189,7 @@ export function RoiCalculator({ embed = false }: { embed?: boolean }) {
         }}
       >
         <DialogContent 
-          className="sm:max-w-lg border-2 border-[#C41230] !overflow-hidden flex flex-col"
+          className="sm:max-w-lg border-2 border-[#C41230] !bg-white"
           showCloseButton={false}
           onEscapeKeyDown={(e) => {
             // Verhindere ESC-Taste
@@ -1214,7 +1214,7 @@ export function RoiCalculator({ embed = false }: { embed?: boolean }) {
           </DialogHeader>
           
           {/* Scrollbarer Container für Formularfelder - feste Höhe für iframe-Kompatibilität */}
-          <div className="space-y-6 py-6 overflow-y-auto max-h-[450px] overscroll-contain flex-1 pr-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-gray-400">
+          <div className="space-y-6 py-6 overflow-y-auto overscroll-contain flex-1 min-h-0 pr-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-gray-400">
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
