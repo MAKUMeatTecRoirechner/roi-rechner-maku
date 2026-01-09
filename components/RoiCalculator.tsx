@@ -9,7 +9,7 @@ import {
 } from "recharts";
 import { 
   TrendingUp, DollarSign, Clock, Package, Zap, CheckCircle2, 
-  Settings, Factory, Target, ArrowRight, Sparkles, ChevronsUpDown, Check
+  Settings, Factory, Target, ArrowRight, Sparkles
 } from "lucide-react";
 import { HeroSection } from "@/components/HeroSection";
 import { Card, CardContent } from "@/components/ui/card";
@@ -21,19 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -189,7 +176,6 @@ export function RoiCalculator({ embed = false }: { embed?: boolean }) {
   const [phone, setPhone] = React.useState("");
   const [company, setCompany] = React.useState("");
   const [country, setCountry] = React.useState("");
-  const [countryOpen, setCountryOpen] = React.useState(false);
   const [nameError, setNameError] = React.useState("");
   const [emailError, setEmailError] = React.useState("");
   const [phoneError, setPhoneError] = React.useState("");
@@ -445,10 +431,11 @@ export function RoiCalculator({ embed = false }: { embed?: boolean }) {
       currency,
       productType: productTypeKey,
       productState: productStateKey,
-      monthlyProduction: parseFloat(monthlyProduction),
-      materialPrice: parseFloat(materialPrice),
-      currentYield: parseFloat(currentYield),
-      targetYield: parseFloat(targetYield),
+      // Alle Zahlen runden um genaue Maschinenpreis-Rückrechnung zu verhindern
+      monthlyProduction: Math.round(parseFloat(monthlyProduction)),
+      materialPrice: Number(parseFloat(materialPrice).toFixed(2)),
+      currentYield: Number(parseFloat(currentYield).toFixed(1)),
+      targetYield: Number(parseFloat(targetYield).toFixed(1)),
       machineSuggestion,
       results: roundedResults,
     };
@@ -1343,61 +1330,26 @@ export function RoiCalculator({ embed = false }: { embed?: boolean }) {
                 <CheckCircle2 className="w-4 h-4 text-[#C41230]" />
                 {t.countryLabel}
               </label>
-              <Popover open={countryOpen} onOpenChange={setCountryOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={countryOpen}
-                    className="w-full h-14 justify-between text-base border-2 focus:ring-2 focus:ring-[#C41230] hover:border-[#C41230] transition-all duration-300 font-normal"
-                  >
-                    {country
-                      ? COUNTRIES.find((c) => c.code === country)?.name
-                      : t.countryPlaceholder}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent 
-                  className="w-[--radix-popover-trigger-width] p-0" 
-                  align="start"
-                  side="bottom"
-                  avoidCollisions={true}
-                  onOpenAutoFocus={(e) => e.preventDefault()}
-                >
-                  <Command>
-                    <CommandInput 
-                      placeholder={language === "de" ? "Land suchen..." : language === "en" ? "Search country..." : "Buscar país..."} 
-                      onFocus={(e) => {
-                        // Verhindere Scroll-Sprung bei Fokus
-                        e.preventDefault();
-                      }}
-                    />
-                    <CommandList className="max-h-[200px]">
-                      <CommandEmpty>{language === "de" ? "Kein Land gefunden." : language === "en" ? "No country found." : "País no encontrado."}</CommandEmpty>
-                      <CommandGroup>
-                        {COUNTRIES.map((c) => (
-                          <CommandItem
-                            key={c.code}
-                            value={c.name}
-                            onSelect={() => {
-                              setCountry(c.code);
-                              setCountryOpen(false);
-                            }}
-                          >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                country === c.code ? "opacity-100" : "opacity-0"
-                              )}
-                            />
-                            {c.name}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+              {/* Natives Select für iframe-Kompatibilität (kein Portal, kein Sprung) */}
+              <select
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                className="w-full h-14 text-base border-2 rounded-md px-3 bg-background text-foreground focus:ring-2 focus:ring-[#C41230] focus:border-[#C41230] hover:border-[#C41230] transition-all duration-300 cursor-pointer appearance-none"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 15 5 5 5-5'/%3E%3Cpath d='m7 9 5-5 5 5'/%3E%3C/svg%3E")`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'right 12px center',
+                  backgroundSize: '16px',
+                  paddingRight: '40px'
+                }}
+              >
+                <option value="">{t.countryPlaceholder}</option>
+                {COUNTRIES.map((c) => (
+                  <option key={c.code} value={c.code}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
             </motion.div>
 
             {/* DSGVO / Privacy consent */}
