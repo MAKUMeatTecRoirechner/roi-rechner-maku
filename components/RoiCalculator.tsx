@@ -153,9 +153,8 @@ export function RoiCalculator({ embed = false }: { embed?: boolean }) {
   const [currency, setCurrency] = React.useState<Currency>("EUR");
   const t = getTranslation(language);
   const privacyPolicyUrl = "https://maku-meattec.com/datenschutzerklaerung-dsgvo/";
-  const makeWebhookUrl =
-    process.env.NEXT_PUBLIC_MAKE_WEBHOOK_URL ??
-    "https://hook.eu1.make.com/udrguaupu3ryq82aeh7lsf994htdzdim";
+  // Verwende unsere geschützte API-Route statt direkt Make.com
+  const makeWebhookUrl = "/api/submit";
 
   // Wizard state - 5 calculator steps (Step 0 = Landing wird nicht mitgezählt)
   const totalSteps = 5;
