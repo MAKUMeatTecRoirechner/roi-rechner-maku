@@ -17,6 +17,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "framer-motion": "^12.24.7",
+    "libphonenumber-js": "^1.11.17",
     "lucide-react": "^0.562.0",
     "next": "16.1.1",
     "react": "19.2.3",

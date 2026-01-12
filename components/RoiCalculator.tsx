@@ -33,6 +33,7 @@ import {
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Language, getTranslation, COUNTRIES } from "@/lib/translations";
 import { cn } from "@/lib/utils";
+import { parsePhoneNumber, isValidPhoneNumber, CountryCode } from "libphonenumber-js";
 
 type Currency = "EUR" | "USD" | "GBP";
 
@@ -299,14 +300,65 @@ export function RoiCalculator({ embed = false }: { embed?: boolean }) {
   };
 
   const validatePhone = (value: string): boolean => {
-    // Basic phone validation: at least 6 digits (allows +, spaces, dashes, parentheses)
-    const phoneRegex = /^[\d\s\-\+\(\)]{6,}$/;
-    if (!phoneRegex.test(value)) {
-      setPhoneError(language === "de" ? "Bitte geben Sie eine gültige Telefonnummer ein" : language === "en" ? "Please enter a valid phone number" : "Por favor ingrese un número de teléfono válido");
+    // Strikte Validierung mit libphonenumber-js
+    const trimmedValue = value.trim();
+    
+    // Mindestlänge prüfen
+    if (trimmedValue.length < 8) {
+      setPhoneError(language === "de" 
+        ? "Telefonnummer muss mindestens 8 Zeichen haben" 
+        : language === "en" 
+        ? "Phone number must be at least 8 characters" 
+        : "El número de teléfono debe tener al menos 8 caracteres");
       return false;
     }
-    setPhoneError("");
-    return true;
+
+    // Nur Ziffern extrahieren für Fake-Pattern-Check
+    const digitsOnly = trimmedValue.replace(/\D/g, '');
+    
+    // Blockiere offensichtliche Fake-Patterns
+    if (digitsOnly.length > 0) {
+      const allSameDigit = /^(\d)\1+$/.test(digitsOnly); // z.B. 000000, 111111
+      const sequential = digitsOnly === '123456789' || digitsOnly === '987654321' || 
+                         digitsOnly === '12345678' || digitsOnly === '123456' ||
+                         digitsOnly === '1234567890';
+      
+      if (allSameDigit || sequential) {
+        setPhoneError(language === "de" 
+          ? "Bitte geben Sie eine gültige Telefonnummer ein" 
+          : language === "en" 
+          ? "Please enter a valid phone number" 
+          : "Por favor ingrese un número de teléfono válido");
+        return false;
+      }
+    }
+
+    // libphonenumber-js Validierung mit ausgewähltem Land als Default
+    try {
+      const defaultCountry = (country || 'DE') as CountryCode;
+      
+      // Prüfe ob Nummer für das ausgewählte Land gültig ist
+      const isValid = isValidPhoneNumber(trimmedValue, defaultCountry);
+      
+      if (!isValid) {
+        setPhoneError(language === "de" 
+          ? "Ungültige Telefonnummer. Bitte inkl. Ländervorwahl (z.B. +49) oder nationale Vorwahl (z.B. 0176) eingeben" 
+          : language === "en" 
+          ? "Invalid phone number. Please include country code (e.g. +49) or national prefix (e.g. 0176)" 
+          : "Número de teléfono inválido. Por favor incluya código de país (ej. +34) o prefijo nacional");
+        return false;
+      }
+      
+      setPhoneError("");
+      return true;
+    } catch (error) {
+      setPhoneError(language === "de" 
+        ? "Ungültige Telefonnummer" 
+        : language === "en" 
+        ? "Invalid phone number" 
+        : "Número de teléfono inválido");
+      return false;
+    }
   };
 
   // Validation per step - all fields must be filled
@@ -411,6 +463,19 @@ export function RoiCalculator({ embed = false }: { embed?: boolean }) {
     // Ländername statt ISO-Code senden für GoHighLevel-Kompatibilität
     const countryName = COUNTRIES.find((c) => c.code === country)?.name || country;
     
+    // Telefonnummer in E.164 Format normalisieren
+    let normalizedPhone = phone;
+    try {
+      const defaultCountry = (country || 'DE') as CountryCode;
+      const phoneNumber = parsePhoneNumber(phone, defaultCountry);
+      if (phoneNumber) {
+        normalizedPhone = phoneNumber.format('E.164'); // z.B. +491761234567
+      }
+    } catch (error) {
+      // Fallback auf eingegebene Nummer, wenn Parsing fehlschlägt
+      normalizedPhone = phone;
+    }
+    
     // Ergebnisse runden wie auf der Ergebnisseite angezeigt
     const roundedResults = calculateResults ? {
       outputOld: Math.round(calculateResults.outputOld),
@@ -424,7 +489,7 @@ export function RoiCalculator({ embed = false }: { embed?: boolean }) {
     const data = {
       name,
       email,
-      phone,
+      phone: normalizedPhone,
       company,
       country: countryName,
       language,
